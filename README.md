@@ -2,10 +2,10 @@ Class.js
 ========
 
 Lighting fast JavaScript class system in 631 bytes (355 bytes gzipped).
+
 100% no wrappers, same performance as hand-written pure JS classes.
 
-inspired by [my.class.js] (https://github.com/jiem/my-class)
-Heavily optimized for google closure advanced compilation.
+inspired by [my.class.js] (https://github.com/jiem/my-class) -> Heavily optimized for google closure advanced compilation.
 
 more details to performance:
 * [instantiation perfs] (http://jsperf.com/moo-resig-ender-my)
@@ -55,7 +55,7 @@ Extend a class
     (function() {
 
       //Dreamer extends Person
-      var Dreamer = Class.create({ Extend: Person,
+      var Dreamer = Class.create({ Extend: myLib.Person,
 
         initialize: function(name, age, dream) {
           Dreamer.Super.call(this, name, age);
