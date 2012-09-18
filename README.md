@@ -1,9 +1,9 @@
 Class.js
 ========
 
-Lighting fast JavaScript class system in 631 bytes (355 bytes gzipped).
+'''Lighting fast JavaScript class system in 1.02KB (519 bytes gzipped)'''
 
-100% no wrappers, same performance as hand-written pure JS classes.
+100% no wrappers, same performance as hand-written pure JS classes. Exposes a beautiful API and gives classes and methods speaking names for debugging!
 
 inspired by [my.class.js] (https://github.com/jiem/my-class) -> Heavily optimized for google closure advanced compilation.
 
@@ -16,70 +16,68 @@ Create a class
 --------------
  Assume that classes are created in the namespace `myLib`.
 
-    (function() {
+    var Person = Class.create({
 
-      var Person = Class.create({
+      STATIC: {
+        AGE_OF_MAJORITY: 18
+      },
 
-        STATIC: {
-          AGE_OF_MAJORITY: 18
-        },
+      initialize: function(name, age) {
+        this.name = name;
+        this.age = age;
+      },
 
-        initialize: function(name, age) {
-          this.name = name;
-          this.age = age;
-        },
+      sayHello: function() {
+        console.log('Hello from ' + this.name + '!');
+      },
 
-        sayHello: function() {
-          console.log('Hello from ' + this.name + '!');
-        },
+      drinkAlcohol: function() {
+        this.age < Person.AGE_OF_MAJORITY ?
+          console.log('Too young! Drink milk instead!') :
+          console.log('Whiskey or beer?');
+      }
 
-        drinkAlcohol: function() {
-          this.age < Person.AGE_OF_MAJORITY ?
-            console.log('Too young! Drink milk instead!') :
-            console.log('Whiskey or beer?');
-        }
+    });
 
-      });
-
-      myLib.Person = Person;
-
-    })();
-
-    var john = new myLib.Person('John', 16);
+    var john = new Person('John', 16);
     john.sayHello(); //log "Hello from John!"
     john.drinkAlcohol(); //log "Too young! Drink milk instead!"
 
 
-Extend a class
---------------
-    (function() {
+Extend and Implement other Classes
+----------------------------------
 
-      //Dreamer extends Person
-      var Dreamer = Class.create({ Extend: myLib.Person,
+    var Dreamy = Class.create({
+      dream: 'default',
+      
+      describeDream: function() {
+        return "..it is about: " + this.dream;
+      }
+    });
+    
+    var Awakable = Class.create({
+      wakeUp: function() {
+        console.log('Wake up!');
+      }
+    });
+    
+    var Dreamer = Class.create({ 
+      Extend: Person, // person is super class (prototypal inheritance)
+      Implement: [Dreamy, Awakable], // mixin prototypes of other classes
 
-        initialize: function(name, age, dream) {
-          Dreamer.Super.call(this, name, age);
-          this.dream = dream;
-        },
+      initialize: function(name, age, dream) {
+        Dreamer.Super.call(this, name, age);
+        this.dream = dream;
+      },
 
-        sayHello: function() {
-          superSayHello.call(this);
-          console.log('I dream of ' + this.dream + '!');
-        },
+      sayHello: function() {
+        Dreamer.Super.prototype.sayHello.call(this);
+        console.log('I dream of ' + this.describeDream() + '!');
+      }
 
-        wakeUp: function() {
-          console.log('Wake up!');
-        }
+    });
 
-      });
-
-      var superSayHello = Dreamer.Super.prototype.sayHello;
-
-      myLib.Dreamer = Dreamer;
-
-    })();
-
-    var sylvester = new myLib.Dreamer('Sylvester', 30, 'eating Tweety');
+    var sylvester = new Dreamer('Sylvester', 30, 'eating Tweety');
     sylvester.sayHello(); //log "Hello from Sylvester! I dream of eating Tweety!"
     sylvester.wakeUp(); //log "Wake up!"
 

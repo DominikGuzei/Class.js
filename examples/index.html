@@ -13,67 +13,65 @@
 
     var myLib = {};
 
-    (function() {
+    var Person = Class.create({
 
-      var Person = Class.create({
+      STATIC: {
+        AGE_OF_MAJORITY: 18
+      },
 
-        STATIC: {
-          AGE_OF_MAJORITY: 18
-        },
+      initialize: function(name, age) {
+        this.name = name;
+        this.age = age;
+      },
 
-        initialize: function(name, age) {
-          this.name = name;
-          this.age = age;
-        },
+      sayHello: function() {
+        console.log('Hello from ' + this.name + '!');
+      },
 
-        sayHello: function() {
-          console.log('Hello from ' + this.name + '!');
-        },
+      drinkAlcohol: function() {
+        this.age < Person.AGE_OF_MAJORITY ?
+          console.log('Too young! Drink milk instead!') :
+          console.log('Whiskey or beer?');
+      }
 
-        drinkAlcohol: function() {
-          this.age < Person.AGE_OF_MAJORITY ?
-            console.log('Too young! Drink milk instead!') :
-            console.log('Whiskey or beer?');
-        }
+    });
 
-      });
-
-      myLib.Person = Person;
-
-    })();
-
-    var john = new myLib.Person('John', 16);
+    var john = new Person('John', 16);
     john.sayHello(); //log "Hello from John!"
     john.drinkAlcohol(); //log "Too young! Drink milk instead!"
     
-    (function() {
+    
+    var Dreamy = Class.create({
+      dream: 'default',
+      
+      describeDream: function() {
+        return "..it is about: " + this.dream;
+      }
+    });
+    
+    var Awakable = Class.create({
+      wakeUp: function() {
+        console.log('Wake up!');
+      }
+    });
+    
+    var Dreamer = Class.create({ 
+      Extend: Person, // person is super class (prototypal inheritance)
+      Implement: [Dreamy, Awakable], // mixin prototypes of other classes
 
-      //Dreamer extends Person
-      var Dreamer = Class.create({ Extend: myLib.Person,
+      initialize: function(name, age, dream) {
+        Dreamer.Super.call(this, name, age);
+        this.dream = dream;
+      },
 
-        initialize: function(name, age, dream) {
-          Dreamer.Super.call(this, name, age);
-          this.dream = dream;
-        },
+      sayHello: function() {
+        Dreamer.Super.prototype.sayHello.call(this);
+        console.log('I dream of ' + this.describeDream() + '!');
+      }
 
-        sayHello: function() {
-          superSayHello.call(this);
-          console.log('I dream of ' + this.dream + '!');
-        },
+    });
 
-        wakeUp: function() {
-          console.log('Wake up!');
-        }
-
-      });
-
-      var superSayHello = Dreamer.Super.prototype.sayHello;
-
-      myLib.Dreamer = Dreamer;
-
-    })();
-
-    var sylvester = new myLib.Dreamer('Sylvester', 30, 'eating Tweety');
+    var sylvester = new Dreamer('Sylvester', 30, 'eating Tweety');
     sylvester.sayHello(); //log "Hello from Sylvester! I dream of eating Tweety!"
     sylvester.wakeUp(); //log "Wake up!"
     
