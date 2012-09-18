@@ -15,7 +15,7 @@ more details to performance:
 Create a class
 --------------
 ```JavaScript
-var Person = Class.create({
+var Person = Class.create('my.lib.Person', {
 
   STATIC: {
     AGE_OF_MAJORITY: 18
@@ -46,7 +46,7 @@ john.drinkAlcohol(); //log "Too young! Drink milk instead!"
 Extend and Implement other Classes
 ----------------------------------
 ```JavaScript
-var Dreamy = Class.create({
+Class.create('my.lib.Dreamy', {
   dream: 'default',
   
   describeDream: function() {
@@ -54,15 +54,15 @@ var Dreamy = Class.create({
   }
 });
 
-var Awakable = Class.create({
+var Awakable = Class.create('my.lib.Awakable', {
   wakeUp: function() {
     console.log('Wake up!');
   }
 });
 
-var Dreamer = Class.create({ 
+var Dreamer = Class.create('my.lib.Dreamer', { 
   Extend: Person, // person is super class (prototypal inheritance)
-  Implement: [Dreamy, Awakable], // mixin prototypes of other classes
+  Implement: [my.lib.Dreamy, Awakable], // mixin prototypes of other classes
 
   initialize: function(name, age, dream) {
     Dreamer.Super.call(this, name, age);
@@ -84,7 +84,7 @@ sylvester.wakeUp(); //log "Wake up!"
 Add methods to a class
 ----------------------
 ```JavaScript
-Class.extend(myLib.Dreamer, {
+Class.extend(my.lib.Dreamer, {
 
   touchTheSky: function() {
     console.log('Touching the sky');

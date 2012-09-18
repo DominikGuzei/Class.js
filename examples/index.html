@@ -11,9 +11,7 @@
   
   <script type="text/javascript">
 
-    var myLib = {};
-
-    var Person = Class.create({
+    var Person = Class.create('my.lib.Person', {
 
       STATIC: {
         AGE_OF_MAJORITY: 18
@@ -41,7 +39,7 @@
     john.drinkAlcohol(); //log "Too young! Drink milk instead!"
     
     
-    var Dreamy = Class.create({
+    Class.create('my.lib.Dreamy', {
       dream: 'default',
       
       describeDream: function() {
@@ -49,32 +47,31 @@
       }
     });
     
-    var Awakable = Class.create({
+    var Awakable = Class.create('my.lib.Awakable', {
       wakeUp: function() {
         console.log('Wake up!');
       }
     });
     
-    var Dreamer = Class.create({ 
+    Class.create('my.lib.Dreamer', { 
       Extend: Person, // person is super class (prototypal inheritance)
-      Implement: [Dreamy, Awakable], // mixin prototypes of other classes
+      Implement: [my.lib.Dreamy, Awakable], // mixin prototypes of other classes
 
       initialize: function(name, age, dream) {
-        Dreamer.Super.call(this, name, age);
+        my.lib.Dreamer.Super.call(this, name, age);
         this.dream = dream;
       },
 
       sayHello: function() {
-        Dreamer.Super.prototype.sayHello.call(this);
+        my.lib.Dreamer.Super.prototype.sayHello.call(this);
         console.log('I dream of ' + this.describeDream() + '!');
       }
 
     });
 
-    var sylvester = new Dreamer('Sylvester', 30, 'eating Tweety');
+    var sylvester = new my.lib.Dreamer('Sylvester', 30, 'eating Tweety');
     sylvester.sayHello(); //log "Hello from Sylvester! I dream of eating Tweety!"
     sylvester.wakeUp(); //log "Wake up!"
-    
   </script>
 </head>
 

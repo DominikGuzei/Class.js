@@ -1,4 +1,4 @@
-(function () {
+(function (global) {
 
   /**
    * Class.js namespace
@@ -17,12 +17,14 @@
     'create': function () {
       var args = arguments;
       var body = args[args.length - 1];
-      var classPath = args.length > 1 ? args[0] : 'AnonymousClass';
+      var classPath = args.length > 1 ? args[0] : null;
+      
+      var classDetails = getClassDetails(classPath);
       
       var SuperClass = body['Extend'] || null;
       delete body['Extend'];
 
-      var NewClass = body['initialize'];
+      NewClass = body['initialize'];
       delete body['initialize'];
       
       if(!NewClass) {
@@ -33,7 +35,7 @@
         }
       }
       
-      applyClassName(NewClass, classPath);
+      applyClassName(NewClass, classDetails['name']);
 
       applySuperClass(NewClass, SuperClass)
       delete body['Extend'];
@@ -41,10 +43,11 @@
       applyImplementations(NewClass, body['Implement']);
       delete body['Implement'];
 
-      applyClassNameToPrototype(NewClass, classPath);
+      applyClassNameToPrototype(NewClass, classDetails['name']);
 
       Class.extend(NewClass, body, true);
 
+      classDetails['namespace'][classDetails['name']] = NewClass;
       return NewClass;
     },
     
@@ -62,6 +65,29 @@
       }
       extend(ExistingClass.prototype, extension, override);
     }
+  };
+
+  function getClassDetails(classPath) {
+    var details = { 'name': 'Anonymous', 'namespace': global };
+    
+    if(classPath) {
+      var pathArray = classPath.split('.');
+      var current = details['namespace'];
+      
+      for(var i = 0; i < pathArray.length; i++) {
+        if(i === pathArray.length-1) {
+          details['name'] = pathArray[i];
+        } 
+        else {
+          if(typeof current[pathArray[i]] === "undefined") current[pathArray[i]] = {};
+          current = current[pathArray[i]];
+        }
+      }
+      
+      details['namespace'] = current;
+    }
+    
+    return details;
   };
 
   function applySuperClass(NewClass, SuperClass) {
@@ -130,4 +156,4 @@
     module['exports'] = Class;
   }
 
-})();
+})(this);
