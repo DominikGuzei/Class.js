@@ -7,71 +7,84 @@
 
   <title>Class.js Demo</title>
 
-  <script src="../class.min.js" type="text/javascript"></script>
+  <script src="../class.js" type="text/javascript"></script>
   
   <script type="text/javascript">
+  
+    var lib = {};
 
-    var Person = Class.create('my.lib.Person', {
+    (function() {
+    
+      lib.Person = Class.design('Person', {
 
-      STATIC: {
-        AGE_OF_MAJORITY: 18
-      },
+        STATIC: {
+          AGE_OF_MAJORITY: 18
+        },
 
-      initialize: function(name, age) {
-        this.name = name;
-        this.age = age;
-      },
+        initialize: function(name, age) {
+          this.name = name;
+          this.age = age;
+        },
 
-      sayHello: function() {
-        console.log('Hello from ' + this.name + '!');
-      },
+        sayHello: function() {
+          console.log('Hello from ' + this.name + '!');
+        },
 
-      drinkAlcohol: function() {
-        this.age < Person.AGE_OF_MAJORITY ?
-          console.log('Too young! Drink milk instead!') :
-          console.log('Whiskey or beer?');
-      }
+        drinkAlcohol: function() {
+          this.age < lib.Person.AGE_OF_MAJORITY ?
+            console.log('Too young! Drink milk instead!') :
+            console.log('Whiskey or beer?');
+        }
+      });
+    })();
 
-    });
-
-    var john = new Person('John', 16);
+    var john = new lib.Person('John', 16);
     john.sayHello(); //log "Hello from John!"
     john.drinkAlcohol(); //log "Too young! Drink milk instead!"
     
     
-    Class.create('my.lib.Dreamy', {
-      dream: 'default',
+    (function() {
+      lib.Dreamy = Class.design('Dreamy', {
+        dream: 'default',
       
-      describeDream: function() {
-        return "..it is about: " + this.dream;
-      }
-    });
+        describeDream: function() {
+          return "..it is about: " + this.dream;
+        }
+      });
+    })();
     
-    var Awakable = Class.create('my.lib.Awakable', {
-      wakeUp: function() {
-        console.log('Wake up!');
-      }
-    });
+    (function() {
+      lib.Awakable = Class.design('Awakable', {
+        wakeUp: function() {
+          console.log('Wake up!');
+        }
+      });
+    })();
     
-    Class.create('my.lib.Dreamer', { 
-      Extend: Person, // person is super class (prototypal inheritance)
-      Implement: [my.lib.Dreamy, Awakable], // mixin prototypes of other classes
+    (function() {
+      lib.Dreamer = Class.design('Dreamer', { 
+        Extends: lib.Person, // person is super class (prototypal inheritance)
+        Implements: [lib.Dreamy, lib.Awakable], // mixin prototypes of other classes
 
-      initialize: function(name, age, dream) {
-        my.lib.Dreamer.Super.call(this, name, age);
-        this.dream = dream;
-      },
+        initialize: function(name, age, dream) {
+          Dreamer.Super.call(this, name, age);
+          this.dream = dream;
+        },
 
-      sayHello: function() {
-        my.lib.Dreamer.Super.prototype.sayHello.call(this);
-        console.log('I dream of ' + this.describeDream() + '!');
-      }
+        sayHello: function() {
+          Dreamer.Super.prototype.sayHello.call(this);
+          console.log('I dream of ' + this.describeDream() + '!');
+        }
+      });
+      
+      var Dreamer = lib.Dreamer;
+      
+    })();
 
-    });
-
-    var sylvester = new my.lib.Dreamer('Sylvester', 30, 'eating Tweety');
+    var sylvester = new lib.Dreamer('Sylvester', 30, 'eating Tweety');
     sylvester.sayHello(); //log "Hello from Sylvester! I dream of eating Tweety!"
     sylvester.wakeUp(); //log "Wake up!"
+    
   </script>
 </head>
 

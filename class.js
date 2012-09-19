@@ -2,31 +2,32 @@
 
   /**
    * Class.js namespace
-   * 
+   *
    * @namespace Class
    */
   var Class = {
     /**
      * Creates and returns a new JavaScript 'class' as constructor function.
-     * 
+     *
      * @param {String|undefined} classPath Namespace plus class name: 'my.awesome.Hero'
      * @param {Object} definition Properties and methods that are added to the prototype
      *
      * @returns {Function} constructor The constructor of the created class
      */
-    'create': function () {
+    'design': function () {
       var args = arguments;
       var body = args[args.length - 1];
-      var classPath = args.length > 1 ? args[0] : null;
-      
-      var classDetails = getClassDetails(classPath);
-      
-      var SuperClass = body['Extend'] || null;
-      delete body['Extend'];
+      var className = args.length > 1 ? args[0] : null;
 
-      NewClass = body['initialize'];
+      var SuperClass = body['Extends'] || null;
+      delete body['Extends'];
+
+      var implementations = body['Implements'];
+      delete body['Implements'];
+
+      var NewClass = body['initialize'];
       delete body['initialize'];
-      
+
       if(!NewClass) {
         if(SuperClass) {
           NewClass = function() { SuperClass.apply(this, arguments); };
@@ -34,26 +35,23 @@
           NewClass = function() {};
         }
       }
-      
-      applyClassName(NewClass, classDetails['name']);
+
+      applyConstructorName(NewClass, className);
 
       applySuperClass(NewClass, SuperClass)
-      delete body['Extend'];
-      
-      applyImplementations(NewClass, body['Implement']);
-      delete body['Implement'];
 
-      applyClassNameToPrototype(NewClass, classDetails['name']);
+      applyImplementations(NewClass, implementations);
+
+      applyClassNameToPrototype(NewClass, className);
 
       Class.extend(NewClass, body, true);
 
-      classDetails['namespace'][classDetails['name']] = NewClass;
       return NewClass;
     },
-    
+
     /**
      * Extend the given class prototype with properties and methods
-     * 
+     *
      * @param {Function} ExistingClass Constructor of existing class
      * @param {Object} extension Properties and methods that are added to the prototype
      * @param {Boolean|undefined} override Specify if the extension should override existing properties
@@ -65,29 +63,6 @@
       }
       extend(ExistingClass.prototype, extension, override);
     }
-  };
-
-  function getClassDetails(classPath) {
-    var details = { 'name': 'Anonymous', 'namespace': global };
-    
-    if(classPath) {
-      var pathArray = classPath.split('.');
-      var current = details['namespace'];
-      
-      for(var i = 0; i < pathArray.length; i++) {
-        if(i === pathArray.length-1) {
-          details['name'] = pathArray[i];
-        } 
-        else {
-          if(typeof current[pathArray[i]] === "undefined") current[pathArray[i]] = {};
-          current = current[pathArray[i]];
-        }
-      }
-      
-      details['namespace'] = current;
-    }
-    
-    return details;
   };
 
   function applySuperClass(NewClass, SuperClass) {
@@ -114,27 +89,27 @@
       }
     }
   };
-  
-  function applyClassName(NewClass, name) {
-    NewClass['toString'] = function() { return name; };  
+
+  function applyConstructorName(NewClass, name) {
+    NewClass['toString'] = function() { return name; };
   };
-  
+
   function applyClassNameToPrototype(NewClass, name) {
     NewClass.prototype['toString'] = function() { return name; };
   };
-  
+
   function applyMethodName(method, name) {
     method['toString'] = function() { return name; };
   };
 
   function extend(object, extension, shouldOverride) {
     var propertyName, property;
-    
+
     for (propertyName in extension) {
       if(shouldOverride || !shouldOverride && !(propertyName in object)) {
-        
+
         property = object[propertyName] = extension[propertyName];
-        
+
         if(typeof property === 'function') {
           var isObjectExtension = (extension.toString === Object.prototype.toString)
           var className = isObjectExtension ? object.constructor : extension.constructor;
@@ -144,7 +119,7 @@
       }
     }
   };
-  
+
   // Return as AMD module or attach to head object
   if (typeof define !== "undefined") {
     define([], function () { return Class; });
