@@ -122,3 +122,21 @@ var Person = Class.create({
 
 });
 ```
+
+AMD Usage
+--------------------------------------
+
+Using Class.js in AMD will look like the following:
+
+```
+define('TagTrack', ['Track', 'Class'], function (Track, Class) {
+    var TagTrack = Class.design('TagTrack', {
+        Extends: Track,
+        initialize : function(settings){
+            TagTrack.Super.call(this, settings);
+            this.settings = settings
+        }
+    });
+    return TagTrack;
+});
+```
