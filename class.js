@@ -1,4 +1,4 @@
-(function (global) {
+(function() {
 
   /**
    * Class.js namespace
@@ -38,7 +38,7 @@
 
       applyConstructorName(NewClass, className);
 
-      applySuperClass(NewClass, SuperClass)
+      applySuperClass(NewClass, SuperClass);
 
       applyImplementations(NewClass, implementations);
 
@@ -88,19 +88,19 @@
         extend(NewClass.prototype, implementations[i].prototype, false);
       }
     }
-  };
+  }
 
   function applyConstructorName(NewClass, name) {
     NewClass['toString'] = function() { return name; };
-  };
+  }
 
   function applyClassNameToPrototype(NewClass, name) {
     NewClass.prototype['toString'] = function() { return name; };
-  };
+  }
 
   function applyMethodName(method, name) {
     method['toString'] = function() { return name; };
-  };
+  }
 
   function extend(object, extension, shouldOverride) {
     var propertyName, property;
@@ -111,14 +111,14 @@
         property = object[propertyName] = extension[propertyName];
 
         if(typeof property === 'function') {
-          var isObjectExtension = (extension.toString === Object.prototype.toString)
+          var isObjectExtension = (extension.toString === Object.prototype.toString);
           var className = isObjectExtension ? object.constructor : extension.constructor;
 
           applyMethodName(property, className + "::" + propertyName);
         }
       }
     }
-  };
+  }
 
   // Return as AMD module or attach to head object
   if (typeof define !== "undefined") {
@@ -131,4 +131,4 @@
     module['exports'] = Class;
   }
 
-})(this);
+})();
