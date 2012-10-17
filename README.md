@@ -15,7 +15,6 @@ more details to performance:
 Create a class
 --------------
 ```JavaScript
-var lib = {};
 
 (function() {
     
