@@ -1,7 +1,7 @@
 Class.js
 ========
 
-***Lightning fast JavaScript class system in 1KB (512 bytes gzipped)***
+***Lightning fast JavaScript class system in 1KB (588 bytes gzipped)***
 
 100% no wrappers, same performance as hand-written pure JS classes. Exposes a beautiful API and gives classes and methods speaking names for debugging!
 
@@ -18,8 +18,8 @@ Create a class
 var lib = {};
 
 (function() {
-
-  lib.Person = Class.design('Person', {
+    
+  Class.design('lib.Person', {
 
     STATIC: {
       AGE_OF_MAJORITY: 18
@@ -51,25 +51,25 @@ Extend and Implement other Classes
 ----------------------------------
 ```JavaScript
 (function() {
-  lib.Dreamy = Class.design('Dreamy', {
+  Class.design('lib.Dreamy', {
     dream: 'default',
-  
+      
     describeDream: function() {
       return "..it is about: " + this.dream;
     }
   });
 })();
-
+    
 (function() {
-  lib.Awakable = Class.design('Awakable', {
+  Class.design('lib.Awakable', {
     wakeUp: function() {
       console.log('Wake up!');
     }
   });
 })();
-
+    
 (function() {
-  lib.Dreamer = Class.design('Dreamer', { 
+  var Dreamer = Class.design('lib.Dreamer', { 
     Extends: lib.Person, // person is super class (prototypal inheritance)
     Implements: [lib.Dreamy, lib.Awakable], // mixin prototypes of other classes
 
@@ -83,8 +83,6 @@ Extend and Implement other Classes
       console.log('I dream of ' + this.describeDream() + '!');
     }
   });
-  
-  var Dreamer = lib.Dreamer;
 })();
 
 var sylvester = new lib.Dreamer('Sylvester', 30, 'eating Tweety');
@@ -110,7 +108,7 @@ Class.extend(my.lib.Dreamer, {
 Afraid to forget the `new` operator?
 ------------------------------------
 ```JavaScript
-var Person = Class.create({
+var Person = Class.design({
 
   // you can now call the constructor with or without new
   initialize: function(name, city) {

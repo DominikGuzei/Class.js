@@ -1,4 +1,4 @@
-(function () {
+(function (globalNamespace) {
   "use strict";
 
   /**
@@ -71,20 +71,42 @@
   function applyClassNameToPrototype(NewClass, name) {
     NewClass.prototype.toString = function () { return name; };
   }
+  
+  function exposeClassOnNamespace(classPath, NewClass) {
+    if(globalNamespace) {
+      var classPathArray, className, currentNamespace, currentPathItem, index;
+    
+      classPathArray = classPath.split('.');
+      className = classPathArray[classPathArray.length - 1];
+    
+      currentNamespace = globalNamespace;
+    
+      for(index = 0; index < classPathArray.length - 1; index += 1) {
+        currentPathItem = classPathArray[index];
+        
+        if(typeof currentNamespace[currentPathItem] === "undefined") {
+          currentNamespace[currentPathItem] = {};
+        }
+        
+        currentNamespace = currentNamespace[currentPathItem];
+      }
+      
+      currentNamespace[className] = NewClass;
+    }
+  }
 
   Class = {
 
     /**
      * Creates and returns a new JavaScript 'class' as constructor function.
      *
-     * @param {?String} className Name of the class - only used for better debugging
-     * @param {Object} classDefinition Properties and methods
-     * that are added to the prototype
+     * @param {String} classPath Namespaces and class name separated by '.'
+     * @param {Object} classDefinition Properties and methods that are added to the prototype
      *
      * @returns {function()} constructor The constructor of the created class
      * @expose
      */
-    design: function (className, classDefinition) {
+    design: function (classPath, classDefinition) {
       var SuperClass, implementations, NewClass;
 
       SuperClass = classDefinition['Extends'] || null;
@@ -104,15 +126,17 @@
         }
       }
 
-      applyConstructorName(NewClass, className);
+      applyConstructorName(NewClass, classPath);
 
       inheritFromClass(NewClass, SuperClass);
 
       augmentImplementations(NewClass, implementations);
 
-      applyClassNameToPrototype(NewClass, className);
+      applyClassNameToPrototype(NewClass, classPath);
 
       Class.extend(NewClass, classDefinition, true);
+
+      exposeClassOnNamespace(classPath, NewClass);
 
       return NewClass;
     },
@@ -139,11 +163,12 @@
   // Return as AMD module or attach to head object
   if (typeof define !== "undefined") {
     define([], function () { return Class; });
-  } else if (typeof window !== "undefined") {
+  } else if (globalNamespace) {
     /** @expose */
-    window.Class = Class;
+    globalNamespace.Class = Class;
   } else {
+    /** @expose */
     module.exports = Class;
   }
 
-}());
+}(typeof define !== "undefined" || typeof window === "undefined" ? null : window));
