@@ -1,50 +1,118 @@
-(function() {
+(function () {
+  "use strict";
 
   /**
    * Class.js namespace
    *
    * @namespace Class
    */
-  var Class = {
+  var Class;
+
+  function inheritFromClass(NewClass, SuperClass) {
+    if (SuperClass) {
+      /** @constructor */
+      var SuperClassProxy = function () {};
+      SuperClassProxy.prototype = SuperClass.prototype;
+
+      NewClass.prototype = new SuperClassProxy();
+      NewClass.prototype.constructor = NewClass;
+
+      /** @expose */
+      NewClass.Super = SuperClass;
+
+      Class.extend(NewClass, SuperClass, false);
+    }
+  }
+
+  function applyMethodName(method, name) {
+    method.toString = function () { return name; };
+  }
+
+  function augmentProperties(target, extension, shouldOverride) {
+    var propertyName, property, targetHasProperty,
+      propertyWouldNotBeOverriden, extensionIsPlainObject, className;
+
+    for (propertyName in extension) {
+      if (extension.hasOwnProperty(propertyName)) {
+        targetHasProperty = target.hasOwnProperty(propertyName);
+        propertyWouldNotBeOverriden = !shouldOverride && !targetHasProperty;
+
+        if (shouldOverride || propertyWouldNotBeOverriden) {
+
+          property = target[propertyName] = extension[propertyName];
+
+          if (typeof property === 'function') {
+            extensionIsPlainObject = (extension.toString === Object.prototype.toString);
+            className = extensionIsPlainObject ? target.constructor : extension.constructor;
+
+            applyMethodName(property, className + "::" + propertyName);
+          }
+        }
+      }
+    }
+  }
+
+  function augmentImplementations(NewClass, implementations) {
+    if (implementations) {
+      var index;
+      if (typeof implementations === 'function') {
+        implementations = [implementations];
+      }
+      for (index = 0; index < implementations.length; index += 1) {
+        augmentProperties(NewClass.prototype, implementations[index].prototype, false);
+      }
+    }
+  }
+
+  function applyConstructorName(NewClass, name) {
+    NewClass.toString = function () { return name; };
+  }
+
+  function applyClassNameToPrototype(NewClass, name) {
+    NewClass.prototype.toString = function () { return name; };
+  }
+
+  Class = {
+
     /**
      * Creates and returns a new JavaScript 'class' as constructor function.
      *
-     * @param {String|undefined} classPath Namespace plus class name: 'my.awesome.Hero'
-     * @param {Object} definition Properties and methods that are added to the prototype
+     * @param {?String} className Name of the class - only used for better debugging
+     * @param {Object} classDefinition Properties and methods
+     * that are added to the prototype
      *
-     * @returns {Function} constructor The constructor of the created class
+     * @returns {function()} constructor The constructor of the created class
+     * @expose
      */
-    'design': function () {
-      var args = arguments;
-      var body = args[args.length - 1];
-      var className = args.length > 1 ? args[0] : null;
+    design: function (className, classDefinition) {
+      var SuperClass, implementations, NewClass;
 
-      var SuperClass = body['Extends'] || null;
-      delete body['Extends'];
+      SuperClass = classDefinition['Extends'] || null;
+      delete classDefinition['Extends'];
 
-      var implementations = body['Implements'];
-      delete body['Implements'];
+      implementations = classDefinition['Implements'] || null;
+      delete classDefinition['Implements'];
 
-      var NewClass = body['initialize'];
-      delete body['initialize'];
+      NewClass = classDefinition['initialize'] || null;
+      delete classDefinition['initialize'];
 
-      if(!NewClass) {
-        if(SuperClass) {
-          NewClass = function() { SuperClass.apply(this, arguments); };
+      if (!NewClass) {
+        if (SuperClass) {
+          NewClass = function () { SuperClass.apply(this, arguments); };
         } else {
-          NewClass = function() {};
+          NewClass = function () {};
         }
       }
 
       applyConstructorName(NewClass, className);
 
-      applySuperClass(NewClass, SuperClass);
+      inheritFromClass(NewClass, SuperClass);
 
-      applyImplementations(NewClass, implementations);
+      augmentImplementations(NewClass, implementations);
 
       applyClassNameToPrototype(NewClass, className);
 
-      Class.extend(NewClass, body, true);
+      Class.extend(NewClass, classDefinition, true);
 
       return NewClass;
     },
@@ -52,83 +120,30 @@
     /**
      * Extend the given class prototype with properties and methods
      *
-     * @param {Function} ExistingClass Constructor of existing class
+     * @param {function()} ExistingClass Constructor of existing class
      * @param {Object} extension Properties and methods that are added to the prototype
-     * @param {Boolean|undefined} override Specify if the extension should override existing properties
+     * @param {boolean=} shouldOverride Specify if the extension should
+     * override existing properties
+     *
+     * @expose
      */
-    'extend': function (ExistingClass, extension, override) {
+    extend: function (ExistingClass, extension, shouldOverride) {
       if (extension['STATIC']) {
-        extend(ExistingClass, extension['STATIC'], override);
+        augmentProperties(ExistingClass, extension['STATIC'], shouldOverride);
         delete extension['STATIC'];
       }
-      extend(ExistingClass.prototype, extension, override);
+      augmentProperties(ExistingClass.prototype, extension, shouldOverride);
     }
   };
-
-  function applySuperClass(NewClass, SuperClass) {
-    if (SuperClass) {
-      var SuperClassProxy = function() {};
-      SuperClassProxy.prototype = SuperClass.prototype;
-
-      NewClass.prototype = new SuperClassProxy();
-      NewClass.prototype.constructor = NewClass;
-
-      NewClass['Super'] = SuperClass;
-
-      Class.extend(NewClass, SuperClass, false);
-    }
-  };
-
-  function applyImplementations(NewClass, implementations) {
-    if (implementations) {
-      if(typeof implementations === 'function') {
-        implementations = [implementations];
-      }
-      for (var i = 0; i < implementations.length; i++) {
-        extend(NewClass.prototype, implementations[i].prototype, false);
-      }
-    }
-  }
-
-  function applyConstructorName(NewClass, name) {
-    NewClass['toString'] = function() { return name; };
-  }
-
-  function applyClassNameToPrototype(NewClass, name) {
-    NewClass.prototype['toString'] = function() { return name; };
-  }
-
-  function applyMethodName(method, name) {
-    method['toString'] = function() { return name; };
-  }
-
-  function extend(object, extension, shouldOverride) {
-    var propertyName, property;
-
-    for (propertyName in extension) {
-      if(shouldOverride || !shouldOverride && !(propertyName in object)) {
-
-        property = object[propertyName] = extension[propertyName];
-
-        if(typeof property === 'function') {
-          var isObjectExtension = (extension.toString === Object.prototype.toString);
-          var className = isObjectExtension ? object.constructor : extension.constructor;
-
-          applyMethodName(property, className + "::" + propertyName);
-        }
-      }
-    }
-  }
 
   // Return as AMD module or attach to head object
   if (typeof define !== "undefined") {
     define([], function () { return Class; });
-  }
-  else if (typeof window !== "undefined") {
-    window['Class'] = Class;
-  }
-  else {
-    module['exports'] = Class;
+  } else if (typeof window !== "undefined") {
+    /** @expose */
+    window.Class = Class;
+  } else {
+    module.exports = Class;
   }
 
-})();
+}());
