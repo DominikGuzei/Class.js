@@ -25,6 +25,11 @@
   var Class = function (classPath, classDefinition) {
     var SuperClass, implementations, NewClass;
 
+    if(arguments.length < 2) {
+      classDefinition = classPath;
+      classPath = null;
+    }
+
     SuperClass = classDefinition['Extends'] || null;
     delete classDefinition['Extends'];
 
@@ -44,17 +49,23 @@
       }
     }
 
-    applyConstructorName(NewClass, classPath);
+    if(classPath) {
+      applyConstructorName(NewClass, classPath);
+    }
 
     Class.inherit(NewClass, SuperClass);
 
     Class.implement(NewClass, implementations);
 
-    applyClassNameToPrototype(NewClass, classPath);
+    if(classPath) {
+      applyClassNameToPrototype(NewClass, classPath);
+    }
 
     Class.extend(NewClass, classDefinition, true);
 
-    Class.namespace(classPath, NewClass);
+    if(classPath) {
+      Class.namespace(classPath, NewClass);
+    }
 
     return NewClass;
   }
