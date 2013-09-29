@@ -1,7 +1,7 @@
 Class.js
 ========
 
-***Lightning fast JavaScript class system in 1KB (588 bytes gzipped)***
+***Lightning fast JavaScript class system in 1.32KB (609 bytes gzipped)***
 
 100% no wrappers, same performance as hand-written pure JS classes. Exposes a beautiful API and gives classes and methods speaking names for debugging!
 
