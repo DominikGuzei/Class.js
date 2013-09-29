@@ -120,8 +120,10 @@
 
       if (!NewClass) {
         if (SuperClass) {
+          // invoke constructor of superclass by default
           NewClass = function () { SuperClass.apply(this, arguments); };
         } else {
+          // there is no super class, default constructor is no-op method
           NewClass = function () {};
         }
       }
@@ -153,9 +155,21 @@
      */
     extend: function (ExistingClass, extension, shouldOverride) {
       if (extension['STATIC']) {
-        augmentProperties(ExistingClass, extension['STATIC'], shouldOverride);
+
+        if(ExistingClass.Super) {
+          // add static properties of the super class to the class namespace
+          augmentProperties(ExistingClass, ExistingClass.Super['_STATIC_'], true);
+        }
+
+        // add static properties and methods to the class namespace
+        augmentProperties(ExistingClass, extension['STATIC'], true);
+
+        // save the static definitions into special var on the class namespace
+        ExistingClass['_STATIC_'] = extension['STATIC'];
         delete extension['STATIC'];
       }
+
+      // add properties and methods to the class prototype
       augmentProperties(ExistingClass.prototype, extension, shouldOverride);
     }
   };

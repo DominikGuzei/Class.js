@@ -80,6 +80,37 @@
     sylvester.sayHello(); //log "Hello from Sylvester! I dream of eating Tweety!"
     sylvester.wakeUp(); //log "Wake up!"
     
+    // inheritance of static variables
+    (function() {
+      var Spaceship = Class.design('lib.Spaceship', { 
+        
+        STATIC: {
+          MIN_SPEED: 0,
+          MAX_SPEED: 100,
+        },
+
+        initialize: function() {
+          console.log('Spaceship speed min: ' + Spaceship.MIN_SPEED + ' max: ' + Spaceship.MAX_SPEED);
+        }
+      });
+
+      var Enterprise = Class.design('lib.Enterprise', { 
+        
+        Extends: lib.Spaceship,
+
+        STATIC: {
+          MAX_SPEED: 99999,
+        },
+
+        initialize: function() {
+          console.log('Enterprise speed min: ' + Enterprise.MIN_SPEED + ' max: ' + Enterprise.MAX_SPEED);
+        }
+      });
+    })();
+
+    var spaceship = new lib.Spaceship();
+    var enterprise = new lib.Enterprise();
+
   </script>
 </head>
 

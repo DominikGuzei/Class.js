@@ -120,6 +120,44 @@ var Person = Class.design({
 });
 ```
 
+Inheritance of static properties
+--------------------------------
+Static properties of the super class are automatically copied to the subclass and then merged with the static properties defined by the subclass. This is what most programmers would expect from traditional inheritance.
+
+```JavaScript
+(function() {
+      var Spaceship = Class.design('lib.Spaceship', { 
+        
+        STATIC: {
+          MIN_SPEED: 0,
+          MAX_SPEED: 100,
+        },
+
+        initialize: function() {
+          console.log('Spaceship speed min: ' + Spaceship.MIN_SPEED + ' max: ' + Spaceship.MAX_SPEED);
+        }
+      });
+
+      var Enterprise = Class.design('lib.Enterprise', { 
+        
+        Extends: lib.Spaceship,
+
+        STATIC: {
+          // overrides the static property of the super class
+          MAX_SPEED: 99999,
+        },
+
+        initialize: function() {
+          console.log('Enterprise speed min: ' + Enterprise.MIN_SPEED + ' max: ' + Enterprise.MAX_SPEED);
+        }
+      });
+    })();
+
+    var spaceship = new lib.Spaceship(); // logs: Spaceship speed min: 0 max: 100
+    var enterprise = new lib.Enterprise(); // logs: Enterprise speed min: 0 max: 99999
+```
+
+
 AMD Usage
 --------------------------------------
 
