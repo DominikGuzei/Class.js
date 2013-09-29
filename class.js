@@ -63,7 +63,7 @@
 
     Class.extend(NewClass, classDefinition, true);
 
-    if(classPath) {
+    if(classPath != null) {
       Class.namespace(classPath, NewClass);
     }
 
@@ -76,7 +76,7 @@
    * 
    * @param  {Object} target
    * @param  {Object} extension
-   * @param  {Boolean} shouldOverride
+   * @param  {boolean} shouldOverride
    * @return {undefined}
    */
   Class.augment = function (target, extension, shouldOverride) {
@@ -110,7 +110,7 @@
    *
    * @param {function()} TargetClass Constructor of existing class
    * @param {Object} extension Properties and methods that are added to the prototype
-   * @param {Boolean} shouldOverride Specify if the extension should
+   * @param {boolean} shouldOverride Specify if the extension should
    * override existing properties on the target class prototype
    *
    * @expose
@@ -192,9 +192,9 @@
    * would create a namespace like window.lib.util.Math and 
    * assign the given object literal to last part: 'Math'
    * 
-   * @param  {[type]} namespacePath [description]
-   * @param  {[type]} exposedObject [description]
-   * @return {[type]}               [description]
+   * @param  {String} namespacePath
+   * @param  {Object} exposedObject
+   * @return {undefined}
    */
   Class.namespace = function (namespacePath, exposedObject) {
 
