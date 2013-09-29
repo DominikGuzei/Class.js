@@ -1,7 +1,7 @@
 Class.js
 ========
 
-***Lightning fast JavaScript class system in 1KB (588 bytes gzipped)***
+***Lightning fast JavaScript class system in 1.4KB (638 bytes gzipped)***
 
 100% no wrappers, same performance as hand-written pure JS classes. Exposes a beautiful API and gives classes and methods speaking names for debugging!
 
@@ -143,6 +143,40 @@ Static properties of the super class are automatically copied to the subclass an
     var enterprise = new lib.Enterprise(); // logs: Enterprise speed min: 0 max: 99999
 ```
 
+Addon: Interfaces
+--------------------------------
+Optionally you can also include interface.js after class.js in your code and start
+defining interfaces for your classes. These add simple runtime checks if you defined
+all required methods on your class. Does not slow down your code because if you define
+the methods they will simply override the ones of the interface.
+
+```JavaScript
+Interface('ICommand', { 
+      
+  execute: Function,
+  undo: Function
+  
+});
+
+var Command = Class({ 
+  
+  Implements: ICommand,
+
+  execute: function() {
+    console.log('executing command');
+  }
+
+});
+
+var command = new Command();
+command.execute(); // logs: executing command
+
+try {
+  command.undo();
+} catch(error) {
+  console.debug(error.message); // logs: Missing implementation for <[object Object]::undo> required by interface ICommand
+}
+```
 
 AMD Usage
 --------------------------------------

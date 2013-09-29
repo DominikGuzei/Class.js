@@ -81,35 +81,34 @@
     sylvester.wakeUp(); //log "Wake up!"
     
     // inheritance of static variables
-    (function() {
-      var Spaceship = Class('lib.Spaceship', { 
-        
-        STATIC: {
-          MIN_SPEED: 0,
-          MAX_SPEED: 100,
-        },
 
-        initialize: function() {
-          console.log('Spaceship speed min: ' + Spaceship.MIN_SPEED + ' max: ' + Spaceship.MAX_SPEED);
-        }
-      });
+    var Spaceship = Class({ 
+      
+      STATIC: {
+        MIN_SPEED: 0,
+        MAX_SPEED: 100,
+      },
 
-      var Enterprise = Class('lib.Enterprise', { 
-        
-        Extends: lib.Spaceship,
+      initialize: function() {
+        console.log('Spaceship speed min: ' + Spaceship.MIN_SPEED + ' max: ' + Spaceship.MAX_SPEED);
+      }
+    });
 
-        STATIC: {
-          MAX_SPEED: 99999,
-        },
+    var Enterprise = Class({ 
+      
+      Extends: Spaceship,
 
-        initialize: function() {
-          console.log('Enterprise speed min: ' + Enterprise.MIN_SPEED + ' max: ' + Enterprise.MAX_SPEED);
-        }
-      });
-    })();
+      STATIC: {
+        MAX_SPEED: 99999,
+      },
 
-    var spaceship = new lib.Spaceship();
-    var enterprise = new lib.Enterprise();
+      initialize: function() {
+        console.log('Enterprise speed min: ' + Enterprise.MIN_SPEED + ' max: ' + Enterprise.MAX_SPEED);
+      }
+    });
+
+    var spaceship = new Spaceship();
+    var enterprise = new Enterprise();
 
   </script>
 </head>
