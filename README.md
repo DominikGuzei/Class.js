@@ -60,7 +60,7 @@ Extend and Implement other Classes
 })();
     
 (function() {
-  Class.design('lib.Awakable', {
+  Class('lib.Awakable', {
     wakeUp: function() {
       console.log('Wake up!');
     }
@@ -89,7 +89,6 @@ sylvester.sayHello(); //log "Hello from Sylvester! I dream of eating Tweety!"
 sylvester.wakeUp(); //log "Wake up!"
 ```
 
-```
 Afraid to forget the `new` operator?
 ------------------------------------
 ```JavaScript
