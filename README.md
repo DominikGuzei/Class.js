@@ -18,7 +18,7 @@ Create a class
 
 (function() {
     
-  Class.design('lib.Person', {
+  Class('lib.Person', {
 
     STATIC: {
       AGE_OF_MAJORITY: 18
@@ -50,7 +50,7 @@ Extend and Implement other Classes
 ----------------------------------
 ```JavaScript
 (function() {
-  Class.design('lib.Dreamy', {
+  Class('lib.Dreamy', {
     dream: 'default',
       
     describeDream: function() {
@@ -68,7 +68,7 @@ Extend and Implement other Classes
 })();
     
 (function() {
-  var Dreamer = Class.design('lib.Dreamer', { 
+  var Dreamer = Class('lib.Dreamer', { 
     Extends: lib.Person, // person is super class (prototypal inheritance)
     Implements: [lib.Dreamy, lib.Awakable], // mixin prototypes of other classes
 
@@ -89,25 +89,11 @@ sylvester.sayHello(); //log "Hello from Sylvester! I dream of eating Tweety!"
 sylvester.wakeUp(); //log "Wake up!"
 ```
 
-Add methods to a class
-----------------------
-```JavaScript
-Class.extend(my.lib.Dreamer, {
-
-  touchTheSky: function() {
-    console.log('Touching the sky');
-  },
-
-  reachTheStars: function() {
-    console.log('She is so pretty!');
-  }
-
-});
 ```
 Afraid to forget the `new` operator?
 ------------------------------------
 ```JavaScript
-var Person = Class.design({
+var Person = Class({
 
   // you can now call the constructor with or without new
   initialize: function(name, city) {
@@ -126,7 +112,7 @@ Static properties of the super class are automatically copied to the subclass an
 
 ```JavaScript
 (function() {
-      var Spaceship = Class.design('lib.Spaceship', { 
+      var Spaceship = Class('lib.Spaceship', { 
         
         STATIC: {
           MIN_SPEED: 0,
@@ -138,7 +124,7 @@ Static properties of the super class are automatically copied to the subclass an
         }
       });
 
-      var Enterprise = Class.design('lib.Enterprise', { 
+      var Enterprise = Class('lib.Enterprise', { 
         
         Extends: lib.Spaceship,
 
@@ -165,7 +151,7 @@ Using Class.js in AMD will look like the following:
 
 ```
 define('TagTrack', ['Track', 'Class'], function (Track, Class) {
-    var TagTrack = Class.design('TagTrack', {
+    var TagTrack = Class('TagTrack', {
         Extends: Track,
         initialize : function(settings){
             TagTrack.Super.call(this, settings);

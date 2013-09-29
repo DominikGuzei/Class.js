@@ -13,7 +13,7 @@
 
     (function() {
     
-      Class.design('lib.Person', {
+      Class('lib.Person', {
 
         STATIC: {
           AGE_OF_MAJORITY: 18
@@ -42,7 +42,7 @@
     
     
     (function() {
-      Class.design('lib.Dreamy', {
+      Class('lib.Dreamy', {
         dream: 'default',
       
         describeDream: function() {
@@ -52,7 +52,7 @@
     })();
     
     (function() {
-      Class.design('lib.Awakable', {
+      Class('lib.Awakable', {
         wakeUp: function() {
           console.log('Wake up!');
         }
@@ -60,7 +60,7 @@
     })();
     
     (function() {
-      var Dreamer = Class.design('lib.Dreamer', { 
+      var Dreamer = Class('lib.Dreamer', { 
         Extends: lib.Person, // person is super class (prototypal inheritance)
         Implements: [lib.Dreamy, lib.Awakable], // mixin prototypes of other classes
 
@@ -82,7 +82,7 @@
     
     // inheritance of static variables
     (function() {
-      var Spaceship = Class.design('lib.Spaceship', { 
+      var Spaceship = Class('lib.Spaceship', { 
         
         STATIC: {
           MIN_SPEED: 0,
@@ -94,7 +94,7 @@
         }
       });
 
-      var Enterprise = Class.design('lib.Enterprise', { 
+      var Enterprise = Class('lib.Enterprise', { 
         
         Extends: lib.Spaceship,
 
