@@ -53,18 +53,18 @@
       applyConstructorName(NewClass, classPath);
     }
 
-    Class.inherit(NewClass, SuperClass);
+    Class['inherit'](NewClass, SuperClass);
 
-    Class.implement(NewClass, implementations);
+    Class['implement'](NewClass, implementations);
 
     if(classPath) {
       applyClassNameToPrototype(NewClass, classPath);
     }
 
-    Class.extend(NewClass, classDefinition, true);
+    Class['extend'](NewClass, classDefinition, true);
 
     if(classPath != null) {
-      Class.namespace(classPath, NewClass);
+      Class['namespace'](classPath, NewClass);
     }
 
     return NewClass;
@@ -79,7 +79,7 @@
    * @param  {boolean} shouldOverride
    * @return {undefined}
    */
-  Class.augment = function (target, extension, shouldOverride) {
+  Class['augment'] = function (target, extension, shouldOverride) {
 
     var propertyName, property, targetHasProperty,
       propertyWouldNotBeOverriden, extensionIsPlainObject, className;
@@ -115,17 +115,17 @@
    *
    * @expose
    */
-  Class.extend = function (TargetClass, extension, shouldOverride) {
+  Class['extend'] = function (TargetClass, extension, shouldOverride) {
     
     if (extension['STATIC']) {
 
       if(TargetClass.Super) {
         // add static properties of the super class to the class namespace
-        Class.augment(TargetClass, TargetClass.Super['_STATIC_'], true);
+        Class['augment'](TargetClass, TargetClass.Super['_STATIC_'], true);
       }
 
       // add static properties and methods to the class namespace
-      Class.augment(TargetClass, extension['STATIC'], true);
+      Class['augment'](TargetClass, extension['STATIC'], true);
 
       // save the static definitions into special var on the class namespace
       TargetClass['_STATIC_'] = extension['STATIC'];
@@ -133,7 +133,7 @@
     }
 
     // add properties and methods to the class prototype
-    Class.augment(TargetClass.prototype, extension, shouldOverride);
+    Class['augment'](TargetClass.prototype, extension, shouldOverride);
   };
 
   /**
@@ -146,7 +146,7 @@
    * @param  {Function} SuperClass
    * @return {undefined}
    */
-  Class.inherit = function (SubClass, SuperClass) {
+  Class['inherit'] = function (SubClass, SuperClass) {
 
     if (SuperClass) {
       /** @constructor */
@@ -159,7 +159,7 @@
       /** @expose */
       SubClass.Super = SuperClass;
 
-      Class.extend(SubClass, SuperClass, false);
+      Class['extend'](SubClass, SuperClass, false);
     }
   };
 
@@ -171,7 +171,7 @@
    * @param  {Function|Array} implementations
    * @return {undefined}
    */
-  Class.implement = function (TargetClass, implementations) {
+  Class['implement'] = function (TargetClass, implementations) {
 
     if (implementations) {
       var index;
@@ -179,7 +179,7 @@
         implementations = [implementations];
       }
       for (index = 0; index < implementations.length; index += 1) {
-        Class.augment(TargetClass.prototype, implementations[index].prototype, false);
+        Class['augment'](TargetClass.prototype, implementations[index].prototype, false);
       }
     }
   }
@@ -196,7 +196,7 @@
    * @param  {Object} exposedObject
    * @return {undefined}
    */
-  Class.namespace = function (namespacePath, exposedObject) {
+  Class['namespace'] = function (namespacePath, exposedObject) {
 
     if(globalNamespace) {
       var classPathArray, className, currentNamespace, currentPathItem, index;

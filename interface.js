@@ -58,10 +58,10 @@
     define(['class.js'], function (Class) { return interfaceModule(Class); });
   } else if (globalNamespace) {
     /** @expose */
-    globalNamespace.Interface = Interface;
+    globalNamespace['Interface'] = interfaceModule(Class);
   } else {
     /** @expose */
-    module.exports = Interface;
+    module.exports = interfaceModule(Class);
   }
 
 }(typeof define !== "undefined" || typeof window === "undefined" ? null : window));
