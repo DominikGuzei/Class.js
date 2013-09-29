@@ -2,6 +2,7 @@ Class.js
 ========
 
 ***Lightning fast JavaScript class system in 1.4KB (638 bytes gzipped)***
+=======
 
 100% no wrappers, same performance as hand-written pure JS classes. Exposes a beautiful API and gives classes and methods speaking names for debugging!
 
@@ -60,7 +61,7 @@ Extend and Implement other Classes
 })();
     
 (function() {
-  Class.design('lib.Awakable', {
+  Class('lib.Awakable', {
     wakeUp: function() {
       console.log('Wake up!');
     }
@@ -89,7 +90,6 @@ sylvester.sayHello(); //log "Hello from Sylvester! I dream of eating Tweety!"
 sylvester.wakeUp(); //log "Wake up!"
 ```
 
-```
 Afraid to forget the `new` operator?
 ------------------------------------
 ```JavaScript
