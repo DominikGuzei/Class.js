@@ -22,12 +22,11 @@
    * @returns {function()} constructor The constructor of the created class
    * @expose
    */
-  var Class = function (classPath, classDefinition) {
-    var SuperClass, implementations, NewClass;
+  var Class = function (classPath, classDefinition, local) {
+    var SuperClass, implementations, className, Initialize, ClassConstructor;
 
-    if(arguments.length < 2) {
-      classDefinition = classPath;
-      classPath = null;
+    if(typeof classPath !== 'string') {
+      throw new Error('Please give your class a name. Pass "true" as last parameter to avoid global namespace pollution');
     }
 
     SuperClass = classDefinition['Extends'] || null;
@@ -36,39 +35,40 @@
     implementations = classDefinition['Implements'] || null;
     delete classDefinition['Implements'];
 
-    NewClass = classDefinition['initialize'] || null;
+    Initialize = classDefinition['initialize'] || null;
     delete classDefinition['initialize'];
 
-    if (!NewClass) {
+    if (!Initialize) {
       if (SuperClass) {
         // invoke constructor of superclass by default
-        NewClass = function () { SuperClass.apply(this, arguments); };
+        Initialize = function () { SuperClass.apply(this, arguments); };
       } else {
         // there is no super class, default constructor is no-op method
-        NewClass = function () {};
+        Initialize = function () {};
       }
     }
 
-    if(classPath) {
-      applyConstructorName(NewClass, classPath);
+    className = classPath.substr(classPath.lastIndexOf('.') + 1);
+
+    /*jslint evil: true */
+    ClassConstructor = new Function('initialize', 'return function ' + className + '() { initialize.apply(this, arguments); }')(Initialize);
+
+    applyConstructorName(ClassConstructor, classPath);
+
+    Class['inherit'](ClassConstructor, SuperClass);
+
+    Class['implement'](ClassConstructor, implementations);
+
+    applyClassNameToPrototype(ClassConstructor, classPath);
+
+    Class['extend'](ClassConstructor, classDefinition, true);
+
+    if(!local) {
+      Class['namespace'](classPath, ClassConstructor);
     }
 
-    Class['inherit'](NewClass, SuperClass);
-
-    Class['implement'](NewClass, implementations);
-
-    if(classPath) {
-      applyClassNameToPrototype(NewClass, classPath);
-    }
-
-    Class['extend'](NewClass, classDefinition, true);
-
-    if(classPath != null) {
-      Class['namespace'](classPath, NewClass);
-    }
-
-    return NewClass;
-  }
+    return ClassConstructor;
+  };
 
   /**
    * Adds all properties of the extension object to the target object. 
@@ -182,7 +182,7 @@
         Class['augment'](TargetClass.prototype, implementations[index].prototype, false);
       }
     }
-  }
+  };
 
   /**
    * Creates a namespace chain and exposes the given object
@@ -198,7 +198,7 @@
    */
   Class['namespace'] = function (namespacePath, exposedObject) {
 
-    if(globalNamespace) {
+    if(typeof globalNamespace['define'] === "undefined") {
       var classPathArray, className, currentNamespace, currentPathItem, index;
     
       classPathArray = namespacePath.split('.');
@@ -218,17 +218,16 @@
       
       currentNamespace[className] = exposedObject;
     }
-  }
+  };
 
   // Return as AMD module or attach to head object
   if (typeof define !== "undefined") {
-    define([], function () { return Class; });
-  } else if (globalNamespace) {
+    define('Class', [], function () { return Class; });
+  }
+  // expose on global namespace like window (browser) or exports (node)
+  else if (globalNamespace) {
     /** @expose */
-    globalNamespace.Class = Class;
-  } else {
-    /** @expose */
-    module.exports = Class;
+    globalNamespace['Class'] = Class;
   }
 
-}(typeof define !== "undefined" || typeof window === "undefined" ? null : window));
+}(typeof define !== "undefined" || typeof window === "undefined" ? exports : window));

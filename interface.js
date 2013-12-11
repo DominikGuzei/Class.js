@@ -1,14 +1,14 @@
 (function (globalNamespace) {
   "use strict";
 
-  function interfaceModule(Class) {
+  function defineInterfaceModule(Class) {
     /**
      * @constructor
      */
     var ImplementationMissingError = function (message) {
       this.name = "ImplementationMissingError";
       this.message = (message || "");
-    }
+    };
     
     ImplementationMissingError.prototype = Error.prototype;
 
@@ -18,19 +18,20 @@
 
         throw new ImplementationMissingError(message);
       };
-    };
+    }
 
-    var Interface = function(path, definition) {
+    var Interface = function(path, definition, local) {
 
-      if(arguments.length < 2 && typeof path !== 'string') {
-        throw new Error('Provide names for interfaces as those are used in exception messages.')
+      if(typeof path !== 'string') {
+        throw new Error('Please give your interface a name. Pass "true" as last parameter to avoid global namespace pollution');
       }
 
-      var NewInterface = function() {},
-          pathArray = path.split('.'),
-          interfaceName = pathArray[pathArray.length - 1],
+      var interfaceName = path.substr(path.lastIndexOf('.') + 1),
           methodName,
           property;
+
+      /*jslint evil: true */
+      var InterfaceConstructor = new Function('return function ' + interfaceName + '() {}')();
 
       for(methodName in definition) {
 
@@ -38,30 +39,37 @@
           
           property = definition[methodName];
 
-          NewInterface.prototype[methodName] = createExceptionThrower(interfaceName, methodName, property);
+          InterfaceConstructor.prototype[methodName] = createExceptionThrower(path, methodName, property);
         }
       }
 
-      Class['namespace'](path, NewInterface);
-      NewInterface.toString = function () { return interfaceName; };
+      if(!local) {
+        Class['namespace'](path, InterfaceConstructor);
+      }
 
-      return NewInterface;
+      InterfaceConstructor.toString = function () { return interfaceName; };
+
+      return InterfaceConstructor;
     };
 
-    Interface.ImplementationMissingError = ImplementationMissingError;
+    Interface['ImplementationMissingError'] = ImplementationMissingError;
 
     return Interface;
   }
 
   // Return as AMD module or attach to head object
   if (typeof define !== "undefined") {
-    define(['class.js'], function (Class) { return interfaceModule(Class); });
-  } else if (globalNamespace) {
+    define('Interface', ['Class'], function (Class) { return defineInterfaceModule(Class); });
+  } 
+  // expose on global namespace (browser)
+  else if (typeof window !== "undefined") {
     /** @expose */
-    globalNamespace['Interface'] = interfaceModule(Class);
-  } else {
-    /** @expose */
-    module.exports = interfaceModule(Class);
+    globalNamespace['Interface'] = defineInterfaceModule(globalNamespace['Class']);
+  }
+  // expose on global namespace (node)
+  else {
+    var Class = require('./Class')['Class'];
+    globalNamespace.Interface = defineInterfaceModule(Class);
   }
 
-}(typeof define !== "undefined" || typeof window === "undefined" ? null : window));
+}(typeof define !== "undefined" || typeof window === "undefined" ? exports : window));
